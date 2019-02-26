@@ -1,0 +1,8 @@
+#!/bin/bash
+#BSUB -W 10:00
+#BSUB -n 1
+#BSUB -R "select[type==any]"
+
+cd "$HOME"
+
+/vagrant/bin/thing_doer > output.txt 2>&1
