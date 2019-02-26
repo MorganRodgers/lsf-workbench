@@ -1,17 +1,32 @@
-# Setup
+## How To Download LSF Community
+
+- Create a free [IBM community account](https://community.ibm.com/community/user/gettingstarted/home)
+- Click [here](https://www-01.ibm.com/marketing/iwm/iwm/web/preLogin.do?source=swerpzsw-lsf-3)
+- Agree to the license
+- Click the tab for download using HTTP
+- Click download now for "IBM Spectrum LSF Suite for Community 10.x Installation Package for Linux x86-64"
+- Copy the file `lsfsce10.2.0.6-x86_64.tar.gz` to the root of the `lsf-workbench` repo.
+
+## Installing LSF
+
+LSF Community edition version is available for free to IBM community members.
+
+The LSF quick start: https://www.ibm.com/support/knowledgecenter/en/SSWRJV_10.1.0/lsf_offering/lsfce10.1_quick_start.html
+
+## Setup
 
     vagrant plugin install vagrant-vbguest  # only required once, and is not tied to a particular Vagrant file / directory
-    git clone https://github.com/OSC/pbspro-workbench.git
-    cd pbspro-workbench
+    git clone https://github.com/MorganRodgers/lsf-workbench.git
+    cd lsf-workbench
     
 
 ## Vagrant
 
 Launch and setup the VMs:
 
-    vagrant up  # loads ood head pbscompute
+    vagrant up  # loads head ood
 
-A proper setup requires that the `ood` VM be brought up first, if `head` and `pbscompute` fail with RPM errors ensure that the file [PBSPro RPM file](https://github.com/PBSPro/pbspro/releases/download/v19.1.1/pbspro_19.1.1.centos7.zip) has been downloaded and unzipped.
+A proper setup requires that the `head` VM be brought up first.
 
 # Usage
 
