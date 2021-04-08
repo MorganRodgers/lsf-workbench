@@ -3,3 +3,11 @@
 .vagrant
 pbspro_*
 .*DS_Store
+*.err
+*.out
+*output*
+lolcow*
+lsfsce10.2.0.6-x86_64/
+ood-home/.bash_history
+ood-home/.ssh
+ood-home/ondemand/

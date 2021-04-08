@@ -1,8 +1,11 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
 
-def install_deps!(node)
+def install_deps_common!(node)
   node.vm.provision "shell", inline: "cp -f /vagrant/hosts /etc/hosts"
+end
+
+def install_deps_yum!(node)
   deps = [
     'java-1.8.0-openjdk',
     'ed',
@@ -13,6 +16,31 @@ def install_deps!(node)
     'zip'
   ]
   node.vm.provision "shell", inline: "yum install -y #{deps.join(' ')}"
+end
+
+def install_deps_apt!(node)
+  deps = [
+    'default-jdk',
+    'ed',
+
+    # * purely for convenience
+    'silversearcher-ag',
+    'vim',
+    'zip'
+  ]
+  node.vm.provision "shell", inline: <<~SHELL
+    apt-get update
+    DEBIAN_FRONTEND=noninteractive apt-get install -qy #{deps.join(' ')}
+  SHELL
+end
+
+def install_singularity!(node)
+  node.vm.provision "shell", inline: <<~SHELL
+    wget -O- http://neuro.debian.net/lists/buster.us-tn.full | tee /etc/apt/sources.list.d/neurodebian.sources.list
+    apt-key adv --recv-keys --keyserver hkp://keyserver.ubuntu.com 0xA5D32F012649A5A9
+    apt-get update
+    DEBIAN_FRONTEND=noninteractive apt-get install -qy singularity-container
+  SHELL
 end
 
 def install_lsf!(node)
@@ -45,21 +73,24 @@ def add_ood_user!(node)
 end
 
 Vagrant.configure(2) do |config|
-  config.vm.box = "centos/7"
   config.vm.synced_folder ".", "/vagrant", type: "virtualbox"
   config.vm.synced_folder "./ood-home", "/home/ood", type: "virtualbox", mount_options: ["uid=1001","gid=1001"]
 
   config.vm.define "head", primary: false, autostart: true do |head|
+    head.vm.box = "bento/debian-10"
     head.vm.network "private_network", ip: "10.0.0.101"
     head.vm.provision "shell", path: "head-setup.sh"
     head.vm.provision "shell", inline: "hostnamectl set-hostname head"
     head.vm.provision "shell", inline: "cp -f /vagrant/hosts /etc/hosts"
 
-    install_deps!(head)
+    install_deps_common!(head)
+    install_deps_apt!(head)
     install_lsf!(head)
+    install_singularity!(head)
   end
 
   config.vm.define "ood", primary: true, autostart: true do |ood|
+    ood.vm.box = "bento/centos-7"
     ood.vm.network "forwarded_port", guest: 80, host: 8080
     ood.vm.network "private_network", ip: "10.0.0.100"
     ood.vm.provision "shell", inline: <<-SHELL
@@ -77,7 +108,8 @@ Vagrant.configure(2) do |config|
     SHELL
 
     # LSF!
-    install_deps!(ood)
+    install_deps_common!(ood)
+    install_deps_yum!(ood)
     install_lsf!(ood)
   end
 end
