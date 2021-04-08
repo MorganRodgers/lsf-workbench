@@ -29,7 +29,7 @@ def install_lsf!(node)
     cp -f /opt/lsf/conf/profile.lsf /etc/profile.d/lsf.sh
 
     # Ensure that LSF config available in default location
-    cp -f /opt/lsf/10.1/conf/lsf.conf /etc/
+    cp -f /opt/lsf/conf/lsf.conf /etc/
 
     # Start
     /opt/lsf/10.1/install/hostsetup --top=/opt/lsf --boot=y --start=y
