@@ -35,11 +35,17 @@ def install_deps_apt!(node)
 end
 
 def install_singularity!(node)
+  # We need the newest version of singularity, which comes in Debian unstable, so
+  # we'll install that one
   node.vm.provision "shell", inline: <<~SHELL
-    wget -O- http://neuro.debian.net/lists/buster.us-tn.full | tee /etc/apt/sources.list.d/neurodebian.sources.list
-    apt-key adv --recv-keys --keyserver hkp://keyserver.ubuntu.com 0xA5D32F012649A5A9
+    echo 'deb http://httpredir.debian.org/debian unstable main' > /etc/apt/sources.list.d/debian-unstable.list
+    cat > /etc/apt/preferences.d/pin-stable <<-EOF
+    Package: *
+    Pin: release stable
+    Pin-Priority: 600
+    EOF
     apt-get update
-    DEBIAN_FRONTEND=noninteractive apt-get install -qy singularity-container
+    DEBIAN_FRONTEND=noninteractive apt-get install -qy singularity-container/unstable
   SHELL
 end
 
